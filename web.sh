@@ -28,6 +28,7 @@ yum install firewalld -y
 systemctl start firewalld
 systemctl enable firewalld
 
+firewall-cmd --permanent --add-port=22/tcp
 firewall-cmd --permanent --add-port=80/tcp
 firewall-cmd --permanent --add-port=3306/tcp
 firewall-cmd --reload
@@ -48,10 +49,10 @@ npm install -g forever
 cat << RCLONE > /root/.rclone.conf
 [remote]
 type = swift
-user = demo
-key = isyl]y[openstack
-auth = http://103.27.200.234:5000/v2.0
-tenant = demo
+user = admin
+key = P@ssw0rd!
+auth = http://203.154.242.201:5000/v2.0
+tenant = admin
 region = RegionOne
 RCLONE
 
