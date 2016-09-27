@@ -13,7 +13,7 @@ wget http://wordpress.org/latest.tar.gz
 rm /var/www/html/index.html
 tar -xzf latest.tar.gz
 
-echo "db_user:$db_user/db_name:$db_name/db_password:$db_password" > /root/web.sh.var
+echo "db_user:$db_user/db_name:$db_name/db_password:$db_password" 
 cp wordpress/wp-config-sample.php wordpress/wp-config.php
 sed -i "s/database_name_here/$db_name/" wordpress/wp-config.php
 sed -i "s/username_here/$db_user/" wordpress/wp-config.php
