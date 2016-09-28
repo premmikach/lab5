@@ -1,5 +1,14 @@
 #!/bin/bash -v
 echo root:centos | chpasswd
+
+setenforce 0
+cat << REPO > /etc/yum.repos.d/local.repo
+[local]
+name=local
+baseurl=http://192.168.10.9/repos/wordpress
+enabled=1
+gpgcheck=0
+REPO
 yum -y -q install httpd
 yum -y install php php-gd php-mysql httpd wget tmux vim unzip
 
@@ -13,8 +22,13 @@ wget http://wordpress.org/latest.tar.gz
 rm /var/www/html/index.html
 tar -xzf latest.tar.gz
 
-echo "db_user:$db_user/db_name:$db_name/db_password:$db_password" 
+#echo "db_user:$db_user/db_name:$db_name/db_password:$db_password" 
 cp wordpress/wp-config-sample.php wordpress/wp-config.php
+
+sed -i "/Deny from All/d" /httpd/conf.d/wordpress.conf
+sed -i "s/Require local/Require all granted/" /httpd/conf.d/wordpress.conf
+sed -i "s/AllowOverride Options/AllowOverride All/" /httpd/conf.d/wordpress.conf
+
 sed -i "s/database_name_here/$db_name/" wordpress/wp-config.php
 sed -i "s/username_here/$db_user/" wordpress/wp-config.php
 sed -i "s/password_here/$db_password/" wordpress/wp-config.php
@@ -97,8 +111,9 @@ BACKUP
 forever start backup.js
 
 systemctl restart httpd.service
-#params:
-#$db_name: {get_param: database_name}
-#$db_user: {get_param: database_user}
-#$db_password: {get_attr: [database_password, value]}
-#$db_host: {get_attr: [db, first_address]}
+
+params:
+ $db_name: {get_param: database_name}
+ $db_user: {get_param: database_user}
+ $db_password: {get_attr: [database_password, value]}
+ $db_host: {get_attr: [db, first_address]}
